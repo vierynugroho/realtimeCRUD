@@ -1,12 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 
 export const ProductList = () => {
+	const { mutate } = useSWRConfig();
+
 	const fetchProduct = async () => {
 		const response = await axios.get('http://localhost:2000/products');
 		return response.data.data;
+	};
+
+	const deleteProduct = async (productId) => {
+		await axios.delete(`http://localhost:2000/products/${productId}`);
+		mutate('products');
 	};
 
 	const { data } = useSWR('products', fetchProduct);
@@ -49,6 +56,7 @@ export const ProductList = () => {
 										</Link>
 										<button
 											type='button'
+											onClick={() => deleteProduct(product.id)}
 											className='font-medium bg-red-500 hover:bg-red-700 px-3 py-1 rounded text-white mr-1'
 										>
 											Hapus
